@@ -1,6 +1,6 @@
 {
   "name": "little-buddy-frontend",
-  "version": "0.1.0",
+  "version": "0.0.0-development",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,7 +10,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "env:decrypt": "bash ./utils/scripts/env-decrypt.sh",
-    "env:encrypt": "bash ./utils/scripts/env-encrypt.sh"
+    "env:encrypt": "bash ./utils/scripts/env-encrypt.sh",
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
@@ -47,5 +48,9 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pedro-loftus/little-buddy-frontend.git"
   }
 }
