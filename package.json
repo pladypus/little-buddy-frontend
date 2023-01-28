@@ -48,9 +48,5 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pedro-loftus/little-buddy-frontend.git"
   }
 }
