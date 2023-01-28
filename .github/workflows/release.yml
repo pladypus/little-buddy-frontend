@@ -9,7 +9,7 @@ env:
   DOTENV_PASS: ${{ secrets.DOTENV_PASS }}
 
 jobs:
-  test:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -20,3 +20,5 @@ jobs:
       - run: npm ci
       - run: npm run env:decrypt
       - run: npx semantic release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
