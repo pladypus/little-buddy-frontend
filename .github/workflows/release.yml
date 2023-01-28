@@ -10,6 +10,7 @@ env:
 
 jobs:
   release:
+    name: Release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,6 +20,6 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm run env:decrypt
-      - run: npx semantic release
+      - run: npm run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
