@@ -10,7 +10,11 @@ const Button: React.FC<
 > = (props) => {
   const { children, ...btnProps } = props;
 
-  return <button {...btnProps}>{children}</button>;
+  return (
+    <button {...btnProps} data-testid="button-test">
+      {children}
+    </button>
+  );
 };
 
 export default Button;
