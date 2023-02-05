@@ -2,6 +2,8 @@
   "name": "little-buddy-frontend",
   "version": "0.0.0-development",
   "private": true,
+  "author": "Peter Loftus",
+  "license": "ISC",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
