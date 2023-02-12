@@ -6,12 +6,12 @@ const DarkModeCtrl = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    const inDarkMode =
+    const darkModeOn =
       localStorage.theme === "dark" ||
       (!("theme" in localStorage) &&
         window.matchMedia("(prefers-color-scheme: dark)").matches);
 
-    setDarkMode(inDarkMode);
+    setDarkMode(darkModeOn);
   }, []);
 
   const changeMode: ChangeEventHandler<HTMLInputElement> = (event) => {
