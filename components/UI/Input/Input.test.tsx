@@ -1,5 +1,4 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { ChangeEvent } from "react";
 import Input from "./Input";
 
 describe("Input", () => {
