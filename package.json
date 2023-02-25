@@ -2,6 +2,8 @@
   "name": "little-buddy-frontend",
   "version": "0.0.0-development",
   "private": true,
+  "author": "Peter Loftus",
+  "license": "ISC",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,8 +11,9 @@
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "env:decrypt": "bash ./utils/scripts/env-decrypt.sh",
-    "env:encrypt": "bash ./utils/scripts/env-encrypt.sh",
+    "test:coverage": "jest --coverage",
+    "env:decrypt": "bash ./scripts/env-decrypt.sh",
+    "env:encrypt": "bash ./scripts/env-encrypt.sh",
     "semantic-release": "semantic-release"
   },
   "dependencies": {
@@ -22,6 +25,7 @@
     "axios": "^1.2.6",
     "loglevel": "^1.8.1",
     "next": "13.1.2",
+    "next-auth": "^4.19.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.42.1"
