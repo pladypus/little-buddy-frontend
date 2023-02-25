@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-littlebuddy-dev-134928-authRole",
+      "UnauthRoleArn": "arn:aws:iam::827252239639:role/amplify-littlebuddy-dev-134928-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::827252239639:role/amplify-littlebuddy-dev-134928-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-littlebuddy-dev-134928-deployment",
+      "UnauthRoleName": "amplify-littlebuddy-dev-134928-unauthRole",
+      "StackName": "amplify-littlebuddy-dev-134928",
+      "StackId": "arn:aws:cloudformation:us-east-1:827252239639:stack/amplify-littlebuddy-dev-134928/260c3480-b53d-11ed-a280-12667b5cc6b9",
+      "AmplifyAppId": "dagao9tlrn7of"
+    }
+  }
+}
