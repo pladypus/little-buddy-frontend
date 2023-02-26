@@ -35,11 +35,11 @@ const DarkModeCtrl = () => {
         checked={darkMode}
         data-testid="darkCtrl-test"
       />
-      {darkMode ? (
-        <FontAwesomeIcon icon={faMoon} className="text-lg" title="Dark Mode" />
-      ) : (
-        <FontAwesomeIcon icon={faSun} className="text-lg" title="Light Mode" />
-      )}
+      <FontAwesomeIcon
+        icon={darkMode ? faMoon : faSun}
+        title={darkMode ? "Dark Mode" : "Light Mode"}
+        size="2x"
+      />
     </label>
   );
 };

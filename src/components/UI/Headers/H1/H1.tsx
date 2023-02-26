@@ -2,11 +2,15 @@ import { HTMLAttributes, ReactNode } from "react";
 
 const H1: React.FC<
   HTMLAttributes<HTMLHeadingElement> & { children?: ReactNode }
-> = (props) => {
-  const { children, ...genProps } = props;
-
+> = ({ children, className, ...h1Props }) => {
   return (
-    <h1 {...genProps} data-testid="h1-test">
+    <h1
+      {...h1Props}
+      className={`text-4xl font-extrabold text-gray-900 md:text-5xl lg:text-6xl dark:text-white ${
+        className ?? ""
+      }`}
+      data-testid="h1-test"
+    >
       {children}
     </h1>
   );

@@ -1,22 +1,52 @@
+import {
+  withAuthenticator,
+  WithAuthenticatorProps,
+} from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
+import { Amplify } from "aws-amplify";
+import { NextPage } from "next";
+import type { AppProps } from "next/app";
+import { ReactElement, ReactNode } from "react";
+import awsExports from "~/aws-exports";
 import { useDarkMode } from "~/hooks";
 import "~/styles/globals.css";
 import configLogger from "~/utils/logger";
-import type { AppProps } from "next/app";
-import { SessionProvider } from "next-auth/react";
 
 configLogger();
+Amplify.configure({ ...awsExports, ssr: true });
 
-const App: React.FC<AppProps> = ({
+const App: React.FC<AppPropsWithLayout & WithAuthenticatorProps> = ({
   Component,
   pageProps: { session, ...pageProps },
+  signOut,
 }) => {
   useDarkMode();
 
+  const getLayout = Component.getLayout ?? ((page) => page);
+
   return (
-    <SessionProvider session={session}>
-      <Component {...pageProps} />
-    </SessionProvider>
+    <>
+      {/* <ThemeProvider
+      colorMode="dark"
+      theme={{
+        name: "my-theme",
+        overrides: [defaultDarkModeOverride],
+      }}
+      >
+      <Authenticator variation="modal"> */}
+      {getLayout(<Component {...pageProps} signOut={signOut} />)}
+      {/* </Authenticator>
+    </ThemeProvider> */}
+    </>
   );
 };
 
-export default App;
+export default withAuthenticator(App);
+
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
