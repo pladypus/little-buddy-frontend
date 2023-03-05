@@ -36,8 +36,13 @@ const EventBtn: React.FC<{
   };
 
   return (
-    <Button className="text-xl p-5 capitalize" onClick={handleClick}>
-      {props.type} <FontAwesomeIcon icon={props.icon} />
+    <Button
+      className="text-xl p-5 capitalize"
+      onClick={handleClick}
+      data-testid="event-btn"
+    >
+      {props.type}{" "}
+      <FontAwesomeIcon icon={props.icon} data-testid="event-btn-icon" />
     </Button>
   );
 };

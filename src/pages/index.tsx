@@ -31,6 +31,8 @@ const Home: NextPage<pageProps> = (props) => {
 
   useEffect(() => {
     router.push(`/${props.dogs[0].id}`);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return null;

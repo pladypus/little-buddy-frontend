@@ -30,6 +30,7 @@ interface pageProps {
   events: any[];
   name: string;
   dogs: any[];
+  signOut?: (data?: any) => void;
 }
 
 const SpecificDogPage: NextPage<pageProps> = (props) => {
@@ -66,7 +67,11 @@ const SpecificDogPage: NextPage<pageProps> = (props) => {
   return (
     <>
       <header className="flex items-center pt-3 px-3">
-        <FontAwesomeIcon icon={faBars} size="3x" />
+        <FontAwesomeIcon
+          icon={faBars}
+          size="3x"
+          onClick={() => props.signOut?.()}
+        />
         <H1 className="flex-grow text-center">{props.name}</H1>
         <DarkModeCtrl />
       </header>
