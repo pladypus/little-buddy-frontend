@@ -1,23 +1,7 @@
-import {
-  faBars,
-  faBowlFood,
-  faCircleUser,
-  faDog,
-  faDroplet,
-  faPoop,
-  faShower,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { gql } from "graphql-request";
-import log from "loglevel";
 import { GetServerSideProps, NextPage } from "next";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import DarkModeCtrl from "~/components/dark-mode-ctrl/DarkModeCtrl";
-import Button from "~/components/UI/Button";
-import Card from "~/components/UI/Card";
-import { H1 } from "~/components/UI/Headers";
 import gqlClient from "~/utils/grqphql-client";
 
 interface pageProps {

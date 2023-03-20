@@ -5,23 +5,14 @@ import {
   faDog,
   faDroplet,
   faPoop,
-  faShower,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { API } from "aws-amplify";
 import { gql } from "graphql-request";
-import log from "loglevel";
-import {
-  GetServerSideProps,
-  GetStaticPaths,
-  GetStaticProps,
-  NextPage,
-} from "next";
+import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DarkModeCtrl from "~/components/dark-mode-ctrl/DarkModeCtrl";
 import EventBtn from "~/components/event-btn";
-import Button from "~/components/UI/Button";
 import Card from "~/components/UI/Card";
 import { H1 } from "~/components/UI/Headers";
 import gqlClient from "~/utils/grqphql-client";
@@ -66,13 +57,13 @@ const SpecificDogPage: NextPage<pageProps> = (props) => {
 
   return (
     <>
-      <header className="flex items-center pt-3 px-3">
+      <header className="flex items-center justify-between pt-3 px-3">
         <FontAwesomeIcon
           icon={faBars}
           size="3x"
           onClick={() => props.signOut?.()}
         />
-        <H1 className="flex-grow text-center">{props.name}</H1>
+        <H1 className="text-center">{props.name}</H1>
         <DarkModeCtrl />
       </header>
       <main className="mx-3 mt-3 mb-5 flex-grow flex flex-col">
@@ -84,18 +75,6 @@ const SpecificDogPage: NextPage<pageProps> = (props) => {
           <EventBtn icon={faPoop} type="poop" setEvents={setEvents} />
           <EventBtn icon={faBowlFood} type="feed" setEvents={setEvents} />
           <EventBtn icon={faDog} type="walk" setEvents={setEvents} />
-          {/* <Button className="text-xl p-5">
-            Pee <FontAwesomeIcon icon={faDroplet} />
-          </Button>
-          <Button className="text-xl p-5">
-            Poop <FontAwesomeIcon icon={faPoop} />
-          </Button>
-          <Button className="text-xl p-5">
-            Feed <FontAwesomeIcon icon={faBowlFood} />
-          </Button>
-          <Button className="text-xl p-5">
-            Walk <FontAwesomeIcon icon={faDog} />
-          </Button> */}
         </div>
       </main>
       <footer
