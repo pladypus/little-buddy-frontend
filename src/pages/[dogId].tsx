@@ -58,7 +58,7 @@ const SpecificDogPage: NextPage<pageProps> = (props) => {
   return (
     <>
       <main className="mx-3 mt-3 mb-5 flex-grow flex flex-col">
-        <Card id="event-log" className="my-2 h-[29.7rem] overflow-y-scroll">
+        <Card id="event-log" className="my-2 h-[28rem] overflow-y-scroll">
           {mappedEvents}
         </Card>
         <div id="action-btns" className="grid grid-cols-2 mt-3 gap-4">
