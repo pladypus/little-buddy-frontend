@@ -8,6 +8,7 @@ import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { ReactElement, ReactNode } from "react";
 import awsExports from "~/aws-exports";
+import Header from "~/components/Header";
 import { useDarkMode } from "~/hooks";
 import "~/styles/globals.css";
 import configLogger from "~/utils/logger";
@@ -17,12 +18,19 @@ Amplify.configure({ ...awsExports, ssr: true });
 
 const App: React.FC<AppPropsWithLayout & WithAuthenticatorProps> = ({
   Component,
-  pageProps: { session, ...pageProps },
+  pageProps: { session, title, ...pageProps },
   signOut,
 }) => {
   useDarkMode();
 
-  const getLayout = Component.getLayout ?? ((page) => page);
+  const getLayout =
+    Component.getLayout ??
+    ((page) => (
+      <>
+        <Header title={title} signOut={signOut} />
+        {page}
+      </>
+    ));
 
   return (
     <>

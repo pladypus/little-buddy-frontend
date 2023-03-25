@@ -13,13 +13,13 @@ import Link from "next/link";
 import { useState } from "react";
 import DarkModeCtrl from "~/components/dark-mode-ctrl/DarkModeCtrl";
 import EventBtn from "~/components/event-btn";
+import MainNav from "~/components/MainNav";
 import Card from "~/components/UI/Card";
 import { H1 } from "~/components/UI/Headers";
 import gqlClient from "~/utils/grqphql-client";
 
 interface pageProps {
   events: any[];
-  name: string;
   dogs: any[];
   signOut?: (data?: any) => void;
 }
@@ -57,20 +57,11 @@ const SpecificDogPage: NextPage<pageProps> = (props) => {
 
   return (
     <>
-      <header className="flex items-center justify-between pt-3 px-3">
-        <FontAwesomeIcon
-          icon={faBars}
-          size="3x"
-          onClick={() => props.signOut?.()}
-        />
-        <H1 className="text-center">{props.name}</H1>
-        <DarkModeCtrl />
-      </header>
       <main className="mx-3 mt-3 mb-5 flex-grow flex flex-col">
         <Card id="event-log" className="my-2 h-[29.7rem] overflow-y-scroll">
           {mappedEvents}
         </Card>
-        <div id="action-btns" className="grid grid-cols-2 mt-3 gap-3">
+        <div id="action-btns" className="grid grid-cols-2 mt-3 gap-4">
           <EventBtn icon={faDroplet} type="pee" setEvents={setEvents} />
           <EventBtn icon={faPoop} type="poop" setEvents={setEvents} />
           <EventBtn icon={faBowlFood} type="feed" setEvents={setEvents} />
@@ -143,6 +134,6 @@ export const getStaticProps: GetStaticProps<pageProps> = async (ctx) => {
   console.log("PROPS", { events: events.items, name, dogs });
 
   return {
-    props: { events: events.items, name, dogs },
+    props: { events: events.items, title: name, dogs },
   };
 };

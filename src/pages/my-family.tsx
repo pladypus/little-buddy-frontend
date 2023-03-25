@@ -22,29 +22,18 @@ const CreateFamilyPage: NextPage<pageProps> = (props) => {
   ));
 
   return (
-    <>
-      <header className="flex items-center justify-between pt-3 px-3">
-        <FontAwesomeIcon
-          icon={faBars}
-          size="3x"
-          onClick={() => props.signOut?.()}
-        />
-        <H1 className="text-center">My Family</H1>
-        <DarkModeCtrl />
-      </header>
-      <div>
-        <h2>Members</h2>
-        {mappedMembers}
-        <Button>
-          Invite Member <FontAwesomeIcon icon={faPlus} />
-        </Button>
-        <h2>Dogs</h2>
-        {mappedDogs}
-        <Button>
-          Add Dog <FontAwesomeIcon icon={faPlus} />
-        </Button>
-      </div>
-    </>
+    <div>
+      <h2>Members</h2>
+      {mappedMembers}
+      <Button>
+        Invite Member <FontAwesomeIcon icon={faPlus} />
+      </Button>
+      <h2>Dogs</h2>
+      {mappedDogs}
+      <Button>
+        Add Dog <FontAwesomeIcon icon={faPlus} />
+      </Button>
+    </div>
   );
 };
 
@@ -69,6 +58,7 @@ export const getStaticProps: GetStaticProps<pageProps> = async (ctx) => {
     props: {
       members: [{ name: "apple pie", id: Math.random() }],
       dogs: [{ name: "Bella", id: Math.random() }],
+      title: "My Family",
     },
   };
 };
