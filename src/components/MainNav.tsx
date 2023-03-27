@@ -5,13 +5,21 @@ import { useState } from "react";
 import Button from "./UI/Button";
 import { Offcanvas } from "./UI/offcanvas";
 
-type navOpt = { pathName: string; displayName: string };
+type navOpt = {
+  pathName: string;
+  displayName: string;
+  testId: `${string}-link`;
+};
 
 const navPaths: navOpt[] = [
-  { pathName: "/ae106f98-de7e-46f5-bd46-c4f191875a7d", displayName: "My Dogs" },
+  {
+    pathName: "/ae106f98-de7e-46f5-bd46-c4f191875a7d",
+    displayName: "My Dogs",
+    testId: "dog-link",
+  },
   // { pathName: "/[dogId]", displayName: "My Dogs" },
-  { pathName: "/my-family", displayName: "My Family" },
-  { pathName: "/find-breed", displayName: "Find Breed" },
+  { pathName: "/my-family", displayName: "My Family", testId: "family-link" },
+  { pathName: "/find-breed", displayName: "Find Breed", testId: "breed-link" },
 ];
 
 const MainNav: React.FC<{ signOut?: (data?: any) => void }> = ({ signOut }) => {
@@ -26,6 +34,7 @@ const MainNav: React.FC<{ signOut?: (data?: any) => void }> = ({ signOut }) => {
         key={Math.random()}
         className="p-2 capitalize text-center font-medium hover:underline"
         onClick={closeNav}
+        data-testid={opt.testId}
       >
         {opt.displayName}
       </Link>
@@ -38,15 +47,20 @@ const MainNav: React.FC<{ signOut?: (data?: any) => void }> = ({ signOut }) => {
         icon={faBars}
         size="3x"
         onClick={openNav}
+        data-testid="menu-btn"
         // onClick={() => props.signOut?.()}
       />
       <Offcanvas show={showNav} onClose={closeNav}>
-        <div className="flex flex-col h-full">
+        <nav className="flex flex-col h-full" data-testid="menu-nav">
           <div className="flex-grow flex flex-col">{navLinks}</div>
-          <Button onClick={() => signOut?.()} className="p-2">
+          <Button
+            onClick={() => signOut?.()}
+            className="p-2"
+            data-testid="sign-out-btn"
+          >
             Sign Out
           </Button>
-        </div>
+        </nav>
       </Offcanvas>
     </>
   );
