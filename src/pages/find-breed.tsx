@@ -1,22 +1,40 @@
 import axios from "axios";
 import log from "loglevel";
 import { GetStaticProps, NextPage } from "next";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
+import { UseFormRegister, useForm } from "react-hook-form";
+import Button from "~/components/UI/Button";
 import Input from "~/components/UI/Input/Input";
 import { percentChange } from "~/utils/percent-change";
+import { randomProperty } from "~/utils/property-select";
+import Image from "next/image";
 
 interface pageProps {}
 
-type choices = 0 | 1 | 2 | 3 | 4 | 5;
+type choices = 0 | 1 | 2 | 3 | 4 | 5 | null;
+type qObj = { min?: number; max?: number };
 interface answers {
-  height?: { min?: number; max?: number };
-  weight?: { min?: number; max?: number };
-  life_expectancy?: { min?: number; max?: number };
-  shedding?: choices;
-  barking?: choices;
-  energy?: choices;
-  protectiveness?: choices;
-  trainability?: choices;
+  height: qObj;
+  weight: qObj;
+  life_expectancy: qObj;
+  shedding: choices;
+  barking: choices;
+  energy: choices;
+  protectiveness: choices;
+  trainability: choices;
+}
+interface apiData {
+  heightMin?: number;
+  heightMax?: number;
+  weightMin?: number;
+  weightMax?: number;
+  life_expectancyMin?: number;
+  life_expectancyMax?: number;
+  shedding?: NonNullable<choices>;
+  barking?: NonNullable<choices>;
+  energy?: NonNullable<choices>;
+  protectiveness?: NonNullable<choices>;
+  trainability?: NonNullable<choices>;
 }
 
 interface dogBreed {
@@ -46,106 +64,181 @@ interface dogBreed {
   name: string;
 }
 
+const apple: (keyof answers)[] = [
+  "barking",
+  "energy",
+  "protectiveness",
+  "shedding",
+  "trainability",
+  "height",
+  "life_expectancy",
+  "weight",
+];
+
 const FindBreedPage: NextPage<pageProps> = () => {
-  const [preferences, setPreferences] = useState<answers>();
+  const [question, setQuestion] = useState<{
+    JSX: ReactNode;
+    getNew: boolean;
+    finished: boolean;
+  }>({ JSX: null, getNew: true, finished: false });
   const [top3Breeds, setTop3Breeds] = useState<dogBreed[]>();
-  log.debug("🚀 ~ file: find-breed.tsx:54 ~ topBreeds:", top3Breeds);
+  const { register, handleSubmit, getValues, reset } = useForm<apiData>();
 
   useEffect(() => {
-    const effect = async () => {
-      if (preferences == null) return;
-      try {
-        const res = await axios.get<dogBreed[]>("/api/dogs", {
-          params: {
-            min_height: preferences.height?.min,
-            max_height: preferences.height?.max,
-            min_weight: preferences.weight?.min,
-            max_weight: preferences.weight?.max,
-            min_life_expectancy: preferences.life_expectancy?.min,
-            max_life_expectancy: preferences.life_expectancy?.max,
-            shedding: preferences.shedding,
-            barking: preferences.barking,
-            energy: preferences.energy,
-            protectiveness: preferences.protectiveness,
-            trainability: preferences.trainability,
-          },
-        });
+    if (!question.getNew || question.finished) return;
 
-        const breeds = [...(top3Breeds ?? []), ...res.data];
+    const existingKeys = Object.keys(getValues()).map((key) => {
+      const keyGroup = key.match(/^(\w*)(Min|Max)$/);
+      return keyGroup == null ? key : keyGroup[1];
+    });
+    log.debug("🚀 ~ file: find-breed.tsx:108 ~ existingKeys ~ existingKeys:", {
+      existingKeys,
+      values: getValues(),
+    });
 
-        const scoredBreeds = breeds.map((dogBreed, idx) => {
-          const {
-            min_life_expectancy,
-            max_life_expectancy,
-            min_height_female,
-            max_height_female,
-            min_height_male,
-            max_height_male,
-            min_weight_female,
-            max_weight_female,
-            min_weight_male,
-            max_weight_male,
-            drooling,
-            image_link,
-            name,
-            ...simple
-          } = dogBreed;
+    // pick random new question
+    const newQuestion = randomProperty(apple, existingKeys) as keyof answers;
 
-          const simpleScore = Object.entries(simple).reduce((prev, data) => {
-            return prev + data[1];
-          }, 0);
-
-          const life_expectancy_score = calcLifeExpectancyScore(
-            { min: min_life_expectancy, max: max_life_expectancy },
-            {
-              min: preferences.life_expectancy?.min,
-              max: preferences.life_expectancy?.max,
-            }
-          );
-
-          const height_score = calcHeightWeightScore(
-            {
-              female: { max: max_height_female, min: min_height_female },
-              male: { max: max_height_male, min: min_height_male },
-            },
-            { max: preferences.height?.max, min: preferences.height?.min }
-          );
-
-          const weight_score = calcHeightWeightScore(
-            {
-              female: { max: max_weight_female, min: min_weight_female },
-              male: { max: max_weight_male, min: min_weight_male },
-            },
-            { max: preferences.height?.max, min: preferences.height?.min }
-          );
-
-          const score =
-            simpleScore -
-            (drooling + life_expectancy_score + height_score + weight_score);
-
-          return { score, idx };
-        });
-
-        const topScores = scoredBreeds
-          .sort((a, b) => a.score - b.score)
-          .slice(0, 3);
-        const topBreeds = topScores.map((score) => breeds[score.idx]);
-
-        setTop3Breeds(topBreeds);
-      } catch (error) {
-        console.log("🚀 ~ file: find-breed.tsx:44 ~ effect ~ error:", error);
-      }
-    };
-
-    effect();
+    setQuestion((prev) => {
+      return {
+        ...prev,
+        JSX: isMinMax(newQuestion) ? (
+          <MinMaxQuestion category={newQuestion} register={register} />
+        ) : (
+          <ChoiceQuestion category={newQuestion} register={register} />
+        ),
+        getNew: false,
+      };
+    });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preferences]);
+  }, [question.getNew]);
+
+  const resetPage = () => {
+    setTop3Breeds(undefined);
+    reset();
+    setQuestion({ getNew: true, finished: false, JSX: <></> });
+  };
+
+  const submitPreference = async (formValues: apiData) => {
+    try {
+      const res = await axios.get<dogBreed[]>("/api/dogs", {
+        params: {
+          min_height: formValues.heightMin,
+          max_height: formValues.heightMax,
+          min_weight: formValues.weightMin,
+          max_weight: formValues.weightMax,
+          min_life_expectancy: formValues.life_expectancyMin,
+          max_life_expectancy: formValues.life_expectancyMax,
+          shedding: formValues.shedding,
+          barking: formValues.barking,
+          energy: formValues.energy,
+          protectiveness: formValues.protectiveness,
+          trainability: formValues.trainability,
+        },
+      });
+
+      const breeds = [...(top3Breeds ?? []), ...res.data];
+
+      const scoredBreeds = breeds.map((dogBreed, idx) => {
+        const {
+          min_life_expectancy,
+          max_life_expectancy,
+          min_height_female,
+          max_height_female,
+          min_height_male,
+          max_height_male,
+          min_weight_female,
+          max_weight_female,
+          min_weight_male,
+          max_weight_male,
+          drooling,
+          image_link,
+          name,
+          ...simple
+        } = dogBreed;
+
+        const simpleScore = Object.entries(simple).reduce((prev, data) => {
+          return prev + data[1];
+        }, 0);
+
+        const life_expectancy_score = calcLifeExpectancyScore(
+          { min: min_life_expectancy, max: max_life_expectancy },
+          {
+            min: formValues.life_expectancyMin,
+            max: formValues.life_expectancyMax,
+          }
+        );
+
+        const height_score = calcHeightWeightScore(
+          {
+            female: { max: max_height_female, min: min_height_female },
+            male: { max: max_height_male, min: min_height_male },
+          },
+          { max: formValues.heightMax, min: formValues.heightMin }
+        );
+
+        const weight_score = calcHeightWeightScore(
+          {
+            female: { max: max_weight_female, min: min_weight_female },
+            male: { max: max_weight_male, min: min_weight_male },
+          },
+          { max: formValues.weightMax, min: formValues.weightMin }
+        );
+
+        const score =
+          simpleScore -
+          (drooling + life_expectancy_score + height_score + weight_score);
+
+        return { score, idx };
+      });
+
+      const topScores = scoredBreeds
+        .sort((a, b) => a.score - b.score)
+        .slice(0, 3);
+      const topBreeds = topScores.map((score) => breeds[score.idx]);
+
+      setTop3Breeds(topBreeds);
+
+      // if to many breeds get new question
+      if (res.data.length > 3)
+        setQuestion((prev) => {
+          return { ...prev, getNew: true };
+        });
+      else {
+        setQuestion((prev) => {
+          return { ...prev, finished: true };
+        });
+      }
+    } catch (error) {
+      console.log("🚀 ~ file: find-breed.tsx:44 ~ effect ~ error:", error);
+    }
+  };
+
+  const mappedBreeds = top3Breeds?.map((breed) => (
+    <DogBreed {...breed} key={Math.random()} />
+  ));
 
   return (
-    <div>
-      <MinMaxQuestion category="height" />
-      <ChoiceQuestion category="shedding" />
+    <div className="flex-grow">
+      {!question.finished ? (
+        <form onSubmit={handleSubmit(submitPreference)} className="mt-36 px-4">
+          {question.JSX}
+          <Button className="p-3 mt-4 block mx-auto w-4/6" type="submit">
+            Next
+          </Button>
+        </form>
+      ) : (
+        <>
+          {mappedBreeds}
+          <button
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-bold rounded-lg px-4 py-2 text-lg block mx-auto my-2 w-4/6"
+            onClick={resetPage}
+          >
+            Take Again
+          </button>
+        </>
+      )}
     </div>
   );
 };
@@ -156,26 +249,45 @@ export const getStaticProps: GetStaticProps<pageProps> = () => {
   return { props: { title: "Find Your Breed" } };
 };
 
-const MinMaxQuestion: React.FC<{ category: string }> = ({ category }) => {
+const MinMaxQuestion: React.FC<{
+  category: keyof Pick<answers, "height" | "life_expectancy" | "weight">;
+  register: UseFormRegister<apiData>;
+}> = ({ category, register }) => {
+  const labelText = category.replace(/_/, " ");
+
   return (
-    <div className="grid grid-cols-2">
+    <div className="grid grid-row-2 gap-4">
       <label className="capitalize font-bold">
-        Min {category}
-        <Input className="font-normal text-black" type="number" />
+        Min {labelText}
+        <Input
+          className="font-normal text-black"
+          type="number"
+          {...register(`${category}Min`)}
+        />
       </label>
       <label className="capitalize font-bold">
-        Max {category}
-        <Input className="font-normal text-black" type="number" />
+        Max {labelText}
+        <Input
+          className="font-normal text-black"
+          type="number"
+          {...register(`${category}Max`)}
+        />
       </label>
     </div>
   );
 };
 
-const ChoiceQuestion: React.FC<{ category: string }> = ({ category }) => {
+const ChoiceQuestion: React.FC<{
+  category: keyof Omit<answers, "height" | "life_expectancy" | "weight">;
+  register: UseFormRegister<apiData>;
+}> = ({ category, register }) => {
   return (
     <label className="capitalize font-bold">
       {category}:
-      <select className="font-normal text-black ml-2">
+      <select
+        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        {...register(category)}
+      >
         <option className="hidden" />
         <option value={0}>{0}</option>
         <option value={1}>{1}</option>
@@ -193,7 +305,7 @@ function calcHeightWeightScore(
     male: { min: number; max: number };
     female: { min: number; max: number };
   },
-  preference: { min?: number; max?: number }
+  preference: qObj
 ) {
   return (
     percentChange(results.male.min, preference.min ?? results.male.min) +
@@ -205,10 +317,43 @@ function calcHeightWeightScore(
 
 function calcLifeExpectancyScore(
   results: { min: number; max: number },
-  preference: { min?: number; max?: number }
+  preference: qObj
 ) {
   return (
     percentChange(results.min, preference.min ?? results.min) +
     percentChange(results.max, preference.max ?? results.max)
   );
 }
+
+function isMinMax(
+  val: string
+): val is keyof Pick<answers, "height" | "life_expectancy" | "weight"> {
+  return val === "height" || val === "weight" || val === "life_expectancy";
+}
+
+const DogBreed: React.FC<dogBreed> = ({ image_link, name, ...breedData }) => {
+  const mappedData = Object.keys(breedData).map((key) => {
+    const displayName = key.replaceAll(/_/g, " ");
+
+    return (
+      <li key={Math.random()}>
+        <span className="capitalize mr-2 font-bold">{displayName}:</span>
+        {breedData[key as keyof typeof breedData]}
+      </li>
+    );
+  });
+
+  return (
+    <div className="border-y pb-2">
+      <h2 className="text-center text-2xl font-extrabold my-2">{name}</h2>
+      <Image
+        src={image_link}
+        alt={name}
+        width={300}
+        height={300}
+        className="mx-auto"
+      />
+      <ul className="ml-4">{mappedData}</ul>
+    </div>
+  );
+};
