@@ -1,10 +1,10 @@
 import { ComponentProps, ReactNode, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import OffcanvasBackdrop from "./Backdrop";
+import Backdrop from "../Backdrop";
 import OffcanvasOverlay from "./Overlay";
 
 const Offcanvas: React.FC<{
-  onClose: ComponentProps<typeof OffcanvasBackdrop>["onClose"];
+  onClose: ComponentProps<typeof Backdrop>["onClose"];
   show: boolean;
   children?: ReactNode;
 }> = ({ onClose, children, show }) => {
@@ -18,7 +18,7 @@ const Offcanvas: React.FC<{
 
   return createPortal(
     <div data-testid="offcanvas-test">
-      <OffcanvasBackdrop onClose={onClose} />
+      <Backdrop onClose={onClose} />
       <OffcanvasOverlay>{children}</OffcanvasOverlay>
     </div>,
     document.getElementById("overlays")!

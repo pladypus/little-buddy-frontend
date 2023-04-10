@@ -13,4 +13,14 @@ describe("Offcanvas", () => {
     const offcanvasElement = screen.getByTestId(/offcanvas-test/i);
     expect(offcanvasElement).toBeInTheDocument;
   });
+
+  test("renders children", () => {
+    render(
+      <Offcanvas onClose={() => {}} show>
+        <p>This is a test</p>
+      </Offcanvas>
+    );
+    const childElement = screen.getByText(/this is a test/i);
+    expect(childElement).toBeInTheDocument;
+  });
 });

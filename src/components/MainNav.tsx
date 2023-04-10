@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useState } from "react";
 import Button from "./UI/Button";
-import { Offcanvas } from "./UI/offcanvas";
+import { Offcanvas } from "./UI/Offcanvas";
 
 type navOpt = {
   pathName: string;
