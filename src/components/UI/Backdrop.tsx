@@ -1,6 +1,6 @@
 import React from "react";
 
-const OffcanvasBackdrop: React.FC<{
+const Backdrop: React.FC<{
   onClose: React.MouseEventHandler<HTMLDivElement>;
 }> = (props) => {
   return (
@@ -13,4 +13,4 @@ const OffcanvasBackdrop: React.FC<{
   );
 };
 
-export default OffcanvasBackdrop;
+export default Backdrop;
