@@ -7,7 +7,7 @@ import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import gqlClient from "~/utils/grqphql-client";
 import Button from "./UI/Button";
 
-type eventType = "pee" | "poop" | "walk" | "feed";
+export type eventType = "pee" | "poop" | "walk" | "feed";
 
 const EventBtn: React.FC<{
   icon: IconProp;
