@@ -9,39 +9,59 @@ import { useForm } from "react-hook-form";
 import Button from "~/components/UI/Button";
 import Input from "~/components/UI/Input/Input";
 import { Modal } from "~/components/UI/Modal";
+import AddDogBtn from "~/components/add-dog-btn";
+import AddMemberBtn from "~/components/add-member-btn";
 import gqlClient from "~/utils/grqphql-client";
 
 interface pageProps {
-  families: any[];
+  families: {
+    id: string;
+    members: {
+      items: entity[];
+    };
+    dogs: {
+      items: entity[];
+    };
+  }[];
   signOut?: (data?: any) => void;
 }
 
-interface newFamilyForm {
+export interface entity {
+  id: string;
   name: string;
 }
 
 const CreateFamilyPage: NextPage<pageProps> = ({ families }) => {
   const [family, setFamily] = useState<{
     id: string;
-    members: any[];
-    dogs: any[];
+    members: entity[];
+    dogs: entity[];
   }>();
-  const { register, handleSubmit } = useForm<newFamilyForm>();
 
-  const [showDogModal, setShowDogModal] = useState(false);
   const [showMemberModal, setShowMemberModal] = useState(false);
 
   const mappedMembers = family?.members.map((member) => (
-    <li key={member.cognitoId}>{member.name}</li>
+    <li key={member.id}>{member.name}</li>
   ));
-  // const mappedDogs = props.dogs.map((dog) => <li key={dog.id}>{dog.name}</li>);
+  const mappedDogs = family?.dogs.map((dog) => (
+    <li key={dog.id}>{dog.name}</li>
+  ));
 
-  const openDogModal = () => setShowDogModal(true);
-  const closeDogModal = () => setShowDogModal(false);
   const openMemberModal = () => setShowMemberModal(true);
   const closeMemberModal = () => setShowMemberModal(false);
 
-  const createDog = () => {};
+  // const createMember = async (formValues:) => {
+  //   const memberMutation = gql`
+  //       mutation {
+  //         createUser(input: { cognitoId: "${userData.username}", name: "${userData.attributes.email}", familyId: "${familyRes.createFamily.id}" }) {
+  //           id
+  //           name
+  //         }
+  //       }
+  //     `;
+  //   // api call to create user
+  //   // add user to family state
+  // };
 
   useEffect(() => {
     const effect = async () => {
@@ -49,10 +69,13 @@ const CreateFamilyPage: NextPage<pageProps> = ({ families }) => {
 
       const apple = families.find((family) =>
         family.members.items.find(
-          (member: any) => member.cognitoId === userData.username
+          (member: any) => member.name === userData.attributes.email
         )
       );
       log.debug("USER DATA", { auth: userData, apple, families });
+
+      if (apple == null) return;
+
       setFamily({
         id: apple.id,
         members: apple.members.items,
@@ -63,14 +86,14 @@ const CreateFamilyPage: NextPage<pageProps> = ({ families }) => {
     effect();
   }, []);
 
-  const createFamily = async (formValues: newFamilyForm) => {
+  const createFamily = async () => {
     const userData = await Auth.currentUserInfo();
     log.debug(
       "🚀 ~ file: my-family.tsx:52 ~ createFamily ~ userData:",
       userData
     );
 
-    const familyQuery = gql`
+    const familyMutation = gql`
       mutation {
         createFamily(input: { ownerId: "${userData.username}" }) {
           id
@@ -79,22 +102,22 @@ const CreateFamilyPage: NextPage<pageProps> = ({ families }) => {
     `;
 
     try {
-      const familyRes = await gqlClient.request(familyQuery);
+      const familyRes = await gqlClient.request(familyMutation);
       log.debug(
         "🚀 ~ file: my-family.tsx:78 ~ createFamily ~ familyRes:",
         familyRes
       );
 
-      const memberQuery = gql`
+      const memberMutation = gql`
         mutation {
-          createUser(input: { cognitoId: "${userData.username}", name: "${formValues.name}", familyId: "${familyRes.createFamily.id}" }) {
+          createUser(input: { cognitoId: "${userData.username}", name: "${userData.attributes.email}", familyId: "${familyRes.createFamily.id}" }) {
             id
             name
           }
         }
       `;
 
-      const memberRes = await gqlClient.request(memberQuery);
+      const memberRes = await gqlClient.request(memberMutation);
       log.debug(
         "🚀 ~ file: my-family.tsx:90 ~ createFamily ~ memberRes:",
         memberRes
@@ -116,45 +139,27 @@ const CreateFamilyPage: NextPage<pageProps> = ({ families }) => {
     <main className="flex-grow">
       {hasFamily ? (
         <>
-          <div className="flex justify-between items-center px-2">
+          <div className="flex justify-between items-center px-2 mt-4">
             <h2 className="text-3xl font-bold dark:text-white">Members</h2>
-            <Button className="p-2" onClick={openMemberModal}>
-              Invite Member <FontAwesomeIcon icon={faPlus} />
-            </Button>
+            <AddMemberBtn familyId={family.id} setFamily={setFamily} />
           </div>
           <ul>{mappedMembers}</ul>
           <hr className="border-gray-500 my-3" />
           <div className="flex justify-between items-center px-2">
             <h2 className="text-3xl font-bold dark:text-white">Dogs</h2>
-            {/* {mappedDogs} */}
-            <Button onClick={openDogModal} className="p-2">
-              Add Dog <FontAwesomeIcon icon={faPlus} />
-            </Button>
+            <AddDogBtn familyId={family.id} setFamily={setFamily} />
           </div>
-          <Modal show={showDogModal} onClose={closeDogModal}>
-            Dog Modal
-          </Modal>
-          <Modal show={showMemberModal} onClose={closeMemberModal}>
-            Member Modal
-          </Modal>
+          <ul>{mappedDogs}</ul>
         </>
       ) : (
-        <form
-          className="flex flex-col gap-2 items-center justify-center mt-44"
-          onSubmit={handleSubmit(createFamily)}
-        >
-          <label className="w-5/6">
-            <span className="text-red-500 mr-1 text-lg font-bold">*</span>
-            Your Name:
-            <Input {...register("name", { required: true })} />
-          </label>
+        <div className="flex flex-col gap-2 items-center justify-center mt-52">
           <button
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-bold rounded-lg text-2xl dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-4/6 p-3"
-            type="submit"
+            onClick={createFamily}
           >
             Create New Family
           </button>
-        </form>
+        </div>
       )}
     </main>
   );
@@ -172,7 +177,7 @@ export const getStaticProps: GetStaticProps<pageProps> = async (ctx) => {
           id
           members {
             items {
-              cognitoId
+              id
               name
             }
           }
@@ -187,13 +192,26 @@ export const getStaticProps: GetStaticProps<pageProps> = async (ctx) => {
     }
   `;
 
-  const res = await gqlClient.request(query);
-  console.log(res.listFamilies.items);
+  try {
+    const res = await gqlClient.request(query);
+    console.log(res.listFamilies.items);
 
-  return {
-    props: {
-      families: res.listFamilies.items,
-      title: "My Family",
-    },
-  };
+    return {
+      props: {
+        families: res.listFamilies.items,
+        title: "My Family",
+      },
+    };
+  } catch (error) {
+    log.debug(
+      "🚀 ~ file: my-family.tsx:202 ~ constgetStaticProps:GetStaticProps<pageProps>= ~ error:",
+      error
+    );
+    return {
+      props: {
+        families: [],
+        title: "My Family",
+      },
+    };
+  }
 };
