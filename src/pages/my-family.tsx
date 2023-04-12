@@ -84,6 +84,7 @@ const CreateFamilyPage: NextPage<pageProps> = ({ families }) => {
     };
 
     effect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const createFamily = async () => {

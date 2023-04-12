@@ -1,20 +1,49 @@
+import { Auth } from "aws-amplify";
 import { gql } from "graphql-request";
 import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import gqlClient from "~/utils/grqphql-client";
 
-interface pageProps {
-  events: any[];
-  dogs: any[];
-  name: string;
+interface family {
+  dogs: {
+    items: {
+      id: string;
+    }[];
+  };
+  members: {
+    items: {
+      name: string;
+    }[];
+  };
 }
 
-const Home: NextPage<pageProps> = (props) => {
+interface pageProps {
+  families: family[];
+}
+
+const Home: NextPage<pageProps> = ({ families }) => {
   const router = useRouter();
 
   useEffect(() => {
-    router.push(`/${props.dogs[0].id}`);
+    const effect = async () => {
+      const userData = await Auth.currentUserInfo();
+
+      const family = families.find((family) =>
+        family.members.items.find(
+          (member) => member.name === userData.attributes.email
+        )
+      );
+
+      if (family == null || family.dogs.items.length < 1) {
+        router.push("/my-family");
+        return;
+      }
+
+      router.push(`/${family.dogs.items[0].id}`);
+    };
+
+    effect();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -80,15 +109,16 @@ export default Home;
 export const getServerSideProps: GetServerSideProps<pageProps> = async () => {
   const query = gql`
     query {
-      listDogs {
+      listFamilies {
         items {
-          id
-          name
-          events {
+          dogs {
             items {
               id
-              type
-              createdAt
+            }
+          }
+          members {
+            items {
+              name
             }
           }
         }
@@ -96,20 +126,13 @@ export const getServerSideProps: GetServerSideProps<pageProps> = async () => {
     }
   `;
 
-  const res = await gqlClient.request(query);
+  const res = await gqlClient.request<{ listFamilies: { items: family[] } }>(
+    query
+  );
 
   console.log("RES", res);
 
-  const dogs = res.listDogs.items.map((dog: any) => {
-    return { id: dog.id };
-  });
-
-  const events = res.listDogs.items[0].events.items;
-  const name = res.listDogs.items[0].name;
-
-  console.log("PROPS", { events, name, dogs });
-
   return {
-    props: { events, name, dogs },
+    props: { families: res.listFamilies.items },
   };
 };
