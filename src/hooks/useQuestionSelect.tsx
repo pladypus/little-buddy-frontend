@@ -33,12 +33,13 @@ export const useQuestionSelect = (params: {
   getValues: UseFormGetValues<apiData>;
   register: UseFormRegister<apiData>;
 }) => {
-  const [question, setQuestion] = useState<ReactNode>(null);
+  const [question, setQuestion] = useState<JSX.Element | null>(null);
   const [isFinished, setIsFinished] = useState(false);
   const [getNewQuestion, setGetNewQuestion] = useState(true);
 
   useEffect(() => {
-    if (!getNewQuestion || isFinished) return;
+    if (!getNewQuestion) return;
+    // if (!getNewQuestion || isFinished) return;
 
     log.debug("FETCHING NEW QUESTION");
 

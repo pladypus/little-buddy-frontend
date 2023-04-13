@@ -15,7 +15,11 @@ const MinMaxQuestion: React.FC<{
   const labelText = category.replace(/_/, " ");
 
   return (
-    <div className="grid grid-row-2 gap-4">
+    <div
+      className="grid grid-row-2 gap-4"
+      data-testid="alg-q-test"
+      data-categ={category}
+    >
       <label className="capitalize font-bold">
         Min {labelText}
         <Input

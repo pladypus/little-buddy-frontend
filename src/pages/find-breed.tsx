@@ -1,15 +1,11 @@
 import axios from "axios";
 import log from "loglevel";
 import { GetStaticProps, NextPage } from "next";
-import { ReactNode, useEffect, useState } from "react";
-import { UseFormRegister, useForm } from "react-hook-form";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import Button from "~/components/UI/Button";
-import Input from "~/components/UI/Input/Input";
-import { percentChange } from "~/utils/percent-change";
-import { randomProperty } from "~/utils/property-select";
-import Image from "next/image";
-import { useQuestionSelect } from "~/hooks/useQuestionSelect";
 import DogBreed from "~/components/algorithm/dog-breed";
+import { useQuestionSelect } from "~/hooks/useQuestionSelect";
 import { scoreBreeds } from "~/utils/algorithm/score";
 
 interface pageProps {}

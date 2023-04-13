@@ -17,7 +17,7 @@ const Modal: React.FC<{
   if (!show || !domReady) return null;
 
   return createPortal(
-    <div data-testid="offcanvas-test">
+    <div data-testid="modal-test">
       <Backdrop onClose={onClose} />
       <ModalOverlay>{children}</ModalOverlay>
     </div>,
