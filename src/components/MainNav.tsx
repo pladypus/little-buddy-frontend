@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Button from "./UI/Button";
 import { Offcanvas } from "./UI/Offcanvas";
+import { useFetchFirstDog } from "~/hooks/useFetchFirstDog";
 
 type navOpt = {
   pathName: string;
@@ -12,12 +13,12 @@ type navOpt = {
 };
 
 const navPaths: navOpt[] = [
-  {
-    pathName: "/ae106f98-de7e-46f5-bd46-c4f191875a7d",
-    displayName: "My Dogs",
-    testId: "dog-link",
-  },
-  // { pathName: "/[dogId]", displayName: "My Dogs" },
+  // {
+  //   pathName: "/ae106f98-de7e-46f5-bd46-c4f191875a7d",
+  //   displayName: "My Dogs",
+  //   testId: "dog-link",
+  // },
+  { pathName: "/[dogId]", displayName: "My Dogs", testId: "dog-link" },
   { pathName: "/my-family", displayName: "My Family", testId: "family-link" },
   { pathName: "/find-breed", displayName: "Find Breed", testId: "breed-link" },
 ];
@@ -27,10 +28,18 @@ const MainNav: React.FC<{ signOut?: (data?: any) => void }> = ({ signOut }) => {
   const openNav = () => setShowNav(true);
   const closeNav = () => setShowNav(false);
 
+  const firstDog = useFetchFirstDog();
+
   const navLinks = navPaths.map((opt) => {
+    const path = opt.pathName.replace(/\[\w+\]/, firstDog ?? "");
+
+    const isValidPath = path.match(/\/(\w+-?)+/);
+
+    if (isValidPath == null) return null;
+
     return (
       <Link
-        href={opt.pathName}
+        href={path}
         key={Math.random()}
         className="p-2 capitalize text-center font-medium hover:underline"
         onClick={closeNav}
