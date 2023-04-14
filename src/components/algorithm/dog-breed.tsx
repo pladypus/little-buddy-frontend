@@ -14,11 +14,11 @@ const DogBreed: React.FC<dogBreed> = ({ image_link, name, ...breedData }) => {
   });
 
   return (
-    <div className="border-y pb-2">
+    <div className="border-y pb-2" data-testid="dog-breed-test">
       <h2 className="text-center text-2xl font-extrabold my-2">{name}</h2>
       <Image
         src={image_link}
-        alt={name}
+        alt={`${name}-image`}
         width={300}
         height={300}
         className="mx-auto"
