@@ -1,4 +1,4 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faCross, faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Auth } from "aws-amplify";
 import { gql } from "graphql-request";
@@ -41,10 +41,16 @@ const CreateFamilyPage: NextPage<pageProps> = ({ families }) => {
   const [showMemberModal, setShowMemberModal] = useState(false);
 
   const mappedMembers = family?.members.map((member) => (
-    <li key={member.id}>{member.name}</li>
+    <li key={member.id} className="flex justify-between items-center">
+      {member.name}
+      <FontAwesomeIcon icon={faXmark} />
+    </li>
   ));
   const mappedDogs = family?.dogs.map((dog) => (
-    <li key={dog.id}>{dog.name}</li>
+    <li key={dog.id} className="flex justify-between items-center">
+      {dog.name}
+      <FontAwesomeIcon icon={faXmark} />
+    </li>
   ));
 
   const openMemberModal = () => setShowMemberModal(true);
@@ -144,13 +150,13 @@ const CreateFamilyPage: NextPage<pageProps> = ({ families }) => {
             <h2 className="text-3xl font-bold dark:text-white">Members</h2>
             <AddMemberBtn familyId={family.id} setFamily={setFamily} />
           </div>
-          <ul>{mappedMembers}</ul>
+          <ul className="mt-2 w-5/6 mx-auto">{mappedMembers}</ul>
           <hr className="border-gray-500 my-3" />
           <div className="flex justify-between items-center px-2">
             <h2 className="text-3xl font-bold dark:text-white">Dogs</h2>
             <AddDogBtn familyId={family.id} setFamily={setFamily} />
           </div>
-          <ul>{mappedDogs}</ul>
+          <ul className="mt-2 w-5/6 mx-auto">{mappedDogs}</ul>
         </>
       ) : (
         <div className="flex flex-col gap-2 items-center justify-center mt-52">
