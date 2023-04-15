@@ -10,7 +10,7 @@ import Button from "~/components/UI/Button";
 import Input from "~/components/UI/Input/Input";
 import { Modal } from "~/components/UI/Modal";
 import AddDogBtn from "~/components/add-dog-btn";
-import AddMemberBtn from "~/components/add-member-btn";
+import InviteMemberBtn from "~/components/invite-member-btn";
 import gqlClient from "~/utils/grqphql-client";
 
 interface pageProps {
@@ -38,8 +38,6 @@ const CreateFamilyPage: NextPage<pageProps> = ({ families }) => {
     dogs: entity[];
   }>();
 
-  const [showMemberModal, setShowMemberModal] = useState(false);
-
   const mappedMembers = family?.members.map((member) => (
     <li key={member.id} className="flex justify-between items-center">
       {member.name}
@@ -52,22 +50,6 @@ const CreateFamilyPage: NextPage<pageProps> = ({ families }) => {
       <FontAwesomeIcon icon={faXmark} />
     </li>
   ));
-
-  const openMemberModal = () => setShowMemberModal(true);
-  const closeMemberModal = () => setShowMemberModal(false);
-
-  // const createMember = async (formValues:) => {
-  //   const memberMutation = gql`
-  //       mutation {
-  //         createUser(input: { cognitoId: "${userData.username}", name: "${userData.attributes.email}", familyId: "${familyRes.createFamily.id}" }) {
-  //           id
-  //           name
-  //         }
-  //       }
-  //     `;
-  //   // api call to create user
-  //   // add user to family state
-  // };
 
   useEffect(() => {
     const effect = async () => {
@@ -148,7 +130,7 @@ const CreateFamilyPage: NextPage<pageProps> = ({ families }) => {
         <>
           <div className="flex justify-between items-center px-2 mt-4">
             <h2 className="text-3xl font-bold dark:text-white">Members</h2>
-            <AddMemberBtn familyId={family.id} setFamily={setFamily} />
+            <InviteMemberBtn familyId={family.id} setFamily={setFamily} />
           </div>
           <ul className="mt-2 w-5/6 mx-auto">{mappedMembers}</ul>
           <hr className="border-gray-500 my-3" />

@@ -5,7 +5,7 @@ import { entity } from "~/pages/my-family";
 import gqlClient from "~/utils/grqphql-client";
 import AddFamilyMemberBtn, { CreateMemberData } from "./add-family-member-btn";
 
-const AddDogBtn: React.FC<{
+const InviteMemberBtn: React.FC<{
   familyId: string;
   setFamily: Dispatch<
     SetStateAction<
@@ -18,11 +18,13 @@ const AddDogBtn: React.FC<{
     >
   >;
 }> = ({ familyId, setFamily }) => {
-  const createDog = async (formValues: CreateMemberData) => {
+  const createMember = async (formValues: CreateMemberData) => {
     // api call to create dog
-    const dogMutation = gql`
+    const userMutation = gql`
       mutation {
-        createDog(input: { name: "${formValues.identifier}", familyId: "${familyId}" }) {
+        createUser(input: { cognitoId: "${Math.random()}", name: "${
+      formValues.identifier
+    }", familyId: "${familyId}" }) {
           id
           name
         }
@@ -30,8 +32,8 @@ const AddDogBtn: React.FC<{
     `;
 
     try {
-      const res = await gqlClient.request<{ createDog: entity }>(dogMutation);
-      log.debug("🚀 ~ file: add-dog-btn.tsx:47 ~ createDog ~ res:", res);
+      const res = await gqlClient.request<{ createUser: entity }>(userMutation);
+      log.debug("🚀 ~ file: add-member-btn.tsx:51 ~ createMember ~ res:", res);
 
       // add dog to family state
       setFamily((prev) => {
@@ -39,21 +41,24 @@ const AddDogBtn: React.FC<{
 
         return {
           ...prev,
-          dogs: [...prev.dogs, res.createDog],
+          members: [...prev.members, res.createUser],
         };
       });
     } catch (error) {
-      log.error("🚀 ~ file: add-dog-btn.tsx:62 ~ createDog ~ error:", error);
+      log.error(
+        "🚀 ~ file: add-member-btn.tsx:59 ~ createMember ~ error:",
+        error
+      );
     }
   };
 
   return (
     <AddFamilyMemberBtn
-      btnLable="Add Dog"
-      createFn={createDog}
-      formLable="Dog's Name"
+      btnLable="Invite Member"
+      createFn={createMember}
+      formLable="Member's Email"
     />
   );
 };
 
-export default AddDogBtn;
+export default InviteMemberBtn;
