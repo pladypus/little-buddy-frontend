@@ -4,12 +4,16 @@ import log from "loglevel";
 import { useEffect, useState } from "react";
 import gqlClient from "~/utils/grqphql-client";
 
-interface QueryRes {
+interface Member {
+  name: string;
+}
+interface Dog {
+  id: string;
+  family: { members: { items: Member[] } };
+}
+interface QueryReturn {
   listDogs: {
-    items: {
-      id: string;
-      family: { members: { items: { name: string }[] } };
-    }[];
+    items: Dog[];
   };
 }
 
@@ -36,7 +40,7 @@ export const useFetchFirstDog = () => {
       `;
 
       try {
-        const qlProm = gqlClient.request<QueryRes>(dogsQuery);
+        const qlProm = gqlClient.request<QueryReturn>(dogsQuery);
         const userProm = Auth.currentUserInfo();
 
         const [res, userData] = await Promise.all([qlProm, userProm]);

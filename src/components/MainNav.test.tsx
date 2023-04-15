@@ -7,6 +7,10 @@ jest.mock("react-dom", () => ({
   createPortal: (node: ReactNode) => node,
 }));
 
+jest.mock("~/hooks/useFetchFirstDog", () => {
+  return { useFetchFirstDog: jest.fn(() => "test") };
+});
+
 describe("Main Nav", () => {
   // todo: move open menu logic to before each method
 
