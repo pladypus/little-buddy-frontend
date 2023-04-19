@@ -26,7 +26,7 @@ const AddFamilyMemberBtn: React.FC<{
   const submitHandler = async (formValues: CreateMemberData) => {
     try {
       await createFn(formValues);
-      // closeModal();
+      closeModal();
     } catch (error) {
       log.error(
         "🚀 ~ file: add-family-member-btn.tsx:31 ~ submitHandler ~ error:",
